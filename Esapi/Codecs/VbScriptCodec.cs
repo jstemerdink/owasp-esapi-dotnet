@@ -20,7 +20,7 @@ namespace Owasp.Esapi.Codecs
         /// <returns>The encoded input.</returns>
         public string Encode(string input)
         {
-            return AntiXss.VisualBasicScriptEncode(input);
+            return Microsoft.Security.Application.Encoder.VisualBasicScriptEncode(input);
         }
 
         /// <summary>

@@ -11,7 +11,7 @@ namespace Owasp.Esapi
     /// <summary> Reference implemenation of the <see cref="Owasp.Esapi.Interfaces.IRandomizer" /> interface. This implementation builds on the MSCAPI provider to provide a
     /// cryptographically strong source of entropy. The specific algorithm used is configurable in the ESAPI properties.
     /// </summary>
-    public class Randomizer : IRandomizer
+    public class Randomizer : IRandomizer, IDisposable
     {
         private RandomNumberGenerator randomNumberGenerator = null;
 
@@ -102,6 +102,29 @@ namespace Owasp.Esapi
                     return true;
             }
             return false;
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                randomNumberGenerator.Dispose();
+            }
+        }
+
+        public void Dispose()
+        {
+
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
+
+        }
+
+        // Disposable types implement a finalizer.
+        ~Randomizer()
+        {
+            Dispose(false);
         }
     }
 }

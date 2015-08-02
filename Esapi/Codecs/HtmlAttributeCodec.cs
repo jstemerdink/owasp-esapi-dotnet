@@ -20,7 +20,11 @@ namespace Owasp.Esapi.Codecs
         /// <returns>The encoded input.</returns>
         public string Encode(string input)
         {
-            return AntiXss.HtmlAttributeEncode(input);
+            if (input == null)
+            {
+                input = string.Empty;
+            }
+            return Microsoft.Security.Application.Encoder.HtmlAttributeEncode(input);
         }
 
         /// <summary>

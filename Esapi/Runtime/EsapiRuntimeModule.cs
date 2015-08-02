@@ -9,7 +9,7 @@ namespace Owasp.Esapi.Runtime
     /// <summary>
     /// ESAPI runtime module
     /// </summary>
-    public class EsapiRuntimeModule : IHttpModule, IRuntimeEventPublisher
+    public class EsapiRuntimeModule : IHttpModule, IRuntimeEventPublisher, IDisposable
     {
         private EsapiRuntime _runtime;
 
@@ -128,13 +128,28 @@ namespace Owasp.Esapi.Runtime
 
         #region IHttpModule Members
 
-        /// <summary>
-        /// Release runtime resources
-        /// </summary>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _runtime.Unsubscribe(this);
+                _runtime.Dispose();
+            }
+        }
+
         public void Dispose()
         {
-            // Disconnect runtime
-            _runtime.Unsubscribe(this);
+
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
+
+        }
+
+        // Disposable types implement a finalizer.
+        ~EsapiRuntimeModule()
+        {
+            Dispose(false);
         }
 
         /// <summary>

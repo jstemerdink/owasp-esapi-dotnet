@@ -188,11 +188,13 @@ namespace Owasp.Esapi.Runtime
                 throw new ArgumentException();
             }
 
-            Context context = new Context(name);
-            context.Subscribe(this);
+            using (Context context = new Context(name))
+            {
+                context.Subscribe(this);
 
-            _subcontexts.Register(name, context);
-            return context;
+                _subcontexts.Register(name, context);
+                return context;
+            }
         }
         /// <summary>
         /// Lookup subcontext by name
@@ -217,17 +219,40 @@ namespace Owasp.Esapi.Runtime
 
         #endregion
         #region IDisposable implementation
-        public void Dispose()
+        
+        protected virtual void Dispose(bool disposing)
         {
-            foreach (ContextRule rule in _rules) {
-                rule.Dispose();
-            }
-            foreach (IContext subcontext in _subcontexts.Objects) {
-                IDisposable disp = subcontext as IDisposable;
-                if (disp != null) {
-                    disp.Dispose();
+            if (disposing)
+            {
+                foreach (ContextRule rule in _rules)
+                {
+                    rule.Dispose();
+                }
+                foreach (IContext subcontext in _subcontexts.Objects)
+                {
+                    IDisposable disp = subcontext as IDisposable;
+
+                    if (disp != null)
+                    {
+                        disp.Dispose();
+                    }
                 }
             }
+        }
+
+        public void Dispose()
+        {
+
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
+
+        }
+
+        // Disposable types implement a finalizer.
+        ~Context()
+        {
+            Dispose(false);
         }
         #endregion
 

@@ -18,7 +18,6 @@ namespace Owasp.Esapi
         /// <summary>
         /// Build addin instance
         /// </summary>
-        /// <typeparam name="T">Instance type</typeparam>
         /// <param name="configuration">Instance configuratio</param>
         /// <returns></returns>
         public static TAddin MakeInstance(AddinElement configuration)

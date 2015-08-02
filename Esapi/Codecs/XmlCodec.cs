@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.Security.Application;
 using Owasp.Esapi.Interfaces;
 
 namespace Owasp.Esapi.Codecs
@@ -19,7 +18,12 @@ namespace Owasp.Esapi.Codecs
         /// <returns>The encoded input.</returns>
         public string Encode(string input)
         {
-            return AntiXss.XmlEncode(input);
+            if (input == null)
+            {
+                input = string.Empty;
+            }
+
+            return Microsoft.Security.Application.Encoder.XmlEncode(input);
         }
 
         /// <summary>

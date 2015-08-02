@@ -103,11 +103,14 @@ namespace Owasp.Esapi.Runtime
                     throw new ArgumentException();
                 }
 
-                Context context = new Context(name);
-                context.Subscribe(this);
+                using (Context context = new Context(name))
+                {
+                    context.Subscribe(this);
 
-                _contexts.Register(name, context);
-                return context;
+                    _contexts.Register(name, context);
+                    return context;
+                }
+               
             }
             finally {
                 _contextsLock.ExitWriteLock();
@@ -178,25 +181,47 @@ namespace Owasp.Esapi.Runtime
         #endregion
 
         #region IDisposable implementation
-        /// <summary>
-        /// Release contexts
-        /// </summary>
-        public void Dispose()
-        {
-            _contextsLock.EnterReadLock();
 
-            try {
-                foreach (IContext context in _contexts.Objects) {
-                    IDisposable ctxDispose = context as IDisposable;
-                    if (ctxDispose != null) {
-                        ctxDispose.Dispose();
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _contextsLock.EnterReadLock();
+
+                try
+                {
+                    foreach (IContext context in _contexts.Objects)
+                    {
+                        IDisposable ctxDispose = context as IDisposable;
+                        if (ctxDispose != null)
+                        {
+                            ctxDispose.Dispose();
+                        }
                     }
                 }
-            }
-            finally {
-                _contextsLock.ExitReadLock();
+                finally
+                {
+                    _contextsLock.ExitReadLock();
+                    _contextsLock.Dispose();
+                }
             }
         }
+
+        public void Dispose()
+        {
+
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
+
+        }
+
+        // Disposable types implement a finalizer.
+        ~EsapiRuntime()
+        {
+            Dispose(false);
+        }
+        
         #endregion
     }
 }

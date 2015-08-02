@@ -59,13 +59,13 @@ namespace EsapiTest
             Assert.AreEqual("", encoder.Encode(BuiltinCodecs.Html, null));
             // test invalid characters are replaced with spaces
             Assert.AreEqual("a&#0;b&#4;c&#128;d&#150;e&#159;f&#9;g", encoder.Encode(BuiltinCodecs.Html, "a" + (char)0 + "b" + (char)4 + "c" + (char)128 + "d" + (char)150 + "e" + (char)159 + "f" + (char)9 + "g"));        
-            Assert.AreEqual("&#60;script&#62;", encoder.Encode(BuiltinCodecs.Html, "<script>"));
-            Assert.AreEqual("&#38;lt&#59;script&#38;gt&#59;", encoder.Encode(BuiltinCodecs.Html, "&lt;script&gt;"));
-            Assert.AreEqual("&#33;&#64;&#36;&#37;&#40;&#41;&#61;&#43;&#123;&#125;&#91;&#93;", encoder.Encode(BuiltinCodecs.Html, "!@$%()=+{}[]"));
+            Assert.AreEqual("&lt;script&gt;", encoder.Encode(BuiltinCodecs.Html, "<script>"));
+            Assert.AreEqual("&amp;lt;script&amp;gt;", encoder.Encode(BuiltinCodecs.Html, "&lt;script&gt;"));
+            Assert.AreEqual("!@$%()=+{}[]", encoder.Encode(BuiltinCodecs.Html, "!@$%()=+{}[]"));
             // Assert.AreEqual("&#x21;&#x40;&#x24;&#x25;&#x28;&#x29;&#x3d;&#x2b;&#x7b;&#x7d;&#x5b;&#x5d;", encoder.Encode(BuiltinCodec.Html, encoder.Canonicalize("&#33;&#64;&#36;&#37;&#40;&#41;&#61;&#43;&#123;&#125;&#91;&#93;") ) );
             Assert.AreEqual(",.-_ ", encoder.Encode(BuiltinCodecs.Html, ",.-_ "));
-            Assert.AreEqual("dir&#38;", encoder.Encode(BuiltinCodecs.Html, "dir&"));
-            Assert.AreEqual("one&#38;two", encoder.Encode(BuiltinCodecs.Html, "one&two"));
+            Assert.AreEqual("dir&amp;", encoder.Encode(BuiltinCodecs.Html, "dir&"));
+            Assert.AreEqual("one&amp;two", encoder.Encode(BuiltinCodecs.Html, "one&two"));
             Assert.AreEqual("" + (char)12345 + (char)65533 + (char)1244, "" + (char)12345 + (char)65533 + (char)1244 );
         }
 
@@ -76,9 +76,9 @@ namespace EsapiTest
             System.Console.Out.WriteLine("EncodeForHtmlAttribute");
             IEncoder encoder = Esapi.Encoder;
             Assert.AreEqual("", encoder.Encode(BuiltinCodecs.HtmlAttribute, null));
-            Assert.AreEqual("&#60;script&#62;", encoder.Encode(BuiltinCodecs.HtmlAttribute, "<script>"));
+            Assert.AreEqual("&lt;script&gt;", encoder.Encode(BuiltinCodecs.HtmlAttribute, "<script>"));
             Assert.AreEqual(",.-_", encoder.Encode(BuiltinCodecs.HtmlAttribute, ",.-_"));
-            Assert.AreEqual("&#32;&#33;&#64;&#36;&#37;&#40;&#41;&#61;&#43;&#123;&#125;&#91;&#93;", encoder.Encode(BuiltinCodecs.HtmlAttribute, " !@$%()=+{}[]"));
+            Assert.AreEqual("&#32;!@$%()=+{}[]", encoder.Encode(BuiltinCodecs.HtmlAttribute, " !@$%()=+{}[]"));
         }
 
         /// <summary> Test of EncodeForJavaScript method, of class Owasp.Esapi.Encoder.</summary>
@@ -118,9 +118,9 @@ namespace EsapiTest
             IEncoder encoder = Esapi.Encoder;
             Assert.AreEqual("", encoder.Encode(BuiltinCodecs.Xml, null));
             Assert.AreEqual(" ", encoder.Encode(BuiltinCodecs.Xml, " "));
-            Assert.AreEqual("&#60;script&#62;", encoder.Encode(BuiltinCodecs.Xml, "<script>"));
+            Assert.AreEqual("&lt;script&gt;", encoder.Encode(BuiltinCodecs.Xml, "<script>"));
             Assert.AreEqual(",.-_", encoder.Encode(BuiltinCodecs.Xml, ",.-_"));
-            Assert.AreEqual("&#33;&#64;&#36;&#37;&#40;&#41;&#61;&#43;&#123;&#125;&#91;&#93;", encoder.Encode(BuiltinCodecs.Xml, "!@$%()=+{}[]"));
+            Assert.AreEqual("!@$%()=+{}[]", encoder.Encode(BuiltinCodecs.Xml, "!@$%()=+{}[]"));
         }
         
         /// <summary> Test of EncodeForXMLAttribute method, of class Owasp.Esapi.Encoder.</summary>
@@ -131,9 +131,9 @@ namespace EsapiTest
             IEncoder encoder = Esapi.Encoder;
             Assert.AreEqual("", encoder.Encode(BuiltinCodecs.XmlAttribute, null));
             Assert.AreEqual("&#32;", encoder.Encode(BuiltinCodecs.XmlAttribute, " "));
-            Assert.AreEqual("&#60;script&#62;", encoder.Encode(BuiltinCodecs.XmlAttribute, "<script>"));
+            Assert.AreEqual("&lt;script&gt;", encoder.Encode(BuiltinCodecs.XmlAttribute, "<script>"));
             Assert.AreEqual(",.-_", encoder.Encode(BuiltinCodecs.XmlAttribute, ",.-_"));
-            Assert.AreEqual("&#32;&#33;&#64;&#36;&#37;&#40;&#41;&#61;&#43;&#123;&#125;&#91;&#93;", encoder.Encode(BuiltinCodecs.XmlAttribute, " !@$%()=+{}[]"));
+            Assert.AreEqual("&#32;!@$%()=+{}[]", encoder.Encode(BuiltinCodecs.XmlAttribute, " !@$%()=+{}[]"));
         }
 
         /// <summary> Test of EncodeForURL method, of class Owasp.Esapi.Encoder.</summary>

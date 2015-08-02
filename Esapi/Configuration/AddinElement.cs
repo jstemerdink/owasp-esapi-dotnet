@@ -60,7 +60,7 @@ namespace Owasp.Esapi.Configuration
         #region properties Property
 
         /// <summary>
-        /// The XML name of the <see cref="properties"/> property.
+        /// The XML name of the properties property.
         /// </summary>
         internal const string PropertiesPropertyName = "properties";
 

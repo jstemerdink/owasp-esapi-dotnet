@@ -53,15 +53,19 @@ namespace Owasp.Esapi
             try
             {
                 // Set up encryption and decryption                
-                SymmetricAlgorithm symmetricAlgorithm = SymmetricAlgorithm.Create(encryptAlgorithm);
-                Rfc2898DeriveBytes rfc2898 = new Rfc2898DeriveBytes(pass, salt);
-                secretKey = rfc2898.GetBytes(symmetricAlgorithm.KeySize / 8);
-                                
-                // TODO: Hardcoded value 13 is the code for DSA
-                asymmetricKeyPair = new CspParameters(13);
-                
-                // The asymmetric key will be stored in the key container using the name ESAPI.
-                asymmetricKeyPair.KeyContainerName = "ESAPI";             
+                using (SymmetricAlgorithm symmetricAlgorithm = SymmetricAlgorithm.Create(encryptAlgorithm))
+                {
+                    using (Rfc2898DeriveBytes rfc2898 = new Rfc2898DeriveBytes(pass, salt))
+                    {
+                        secretKey = rfc2898.GetBytes(symmetricAlgorithm.KeySize / 8);
+                    }
+                    // TODO: Hardcoded value 13 is the code for DSA
+                    asymmetricKeyPair = new CspParameters(13);
+
+                    // The asymmetric key will be stored in the key container using the name ESAPI.
+                    asymmetricKeyPair.KeyContainerName = "ESAPI";
+                }
+                   
             }
             catch (Exception e)
             {                
@@ -75,25 +79,26 @@ namespace Owasp.Esapi
             try
             {
                 // Create a new instance of the hash crypto service provider.
-                HashAlgorithm hasher = HashAlgorithm.Create(hashAlgorithm);
-
-                // Convert the data to hash to an array of Bytes.
-                byte[] originalBytes = Encoding.UTF8.GetBytes(plaintext + salt);
-
-                // Compute the Hash. This returns an array of Bytes.
-                byte[] hashBytes = hasher.ComputeHash(originalBytes);
-
-                // rehash a number of times to help strengthen weak passwords
-                // FIXME: ENHANCE make iterations configurable                
-                for (int i = 0; i < 1024; i++)
+                using (HashAlgorithm hasher = HashAlgorithm.Create(hashAlgorithm))
                 {
-                    hashBytes = hasher.ComputeHash(hashBytes);
-                }
-                // Optionally, represent the hash value as a base64-encoded string, 
-                // For example, if you need to display the value or transmit it over a network.
-                string hashBase64String = Convert.ToBase64String(hashBytes);
+                    // Convert the data to hash to an array of Bytes.
+                    byte[] originalBytes = Encoding.UTF8.GetBytes(plaintext + salt);
 
-                return hashBase64String;
+                    // Compute the Hash. This returns an array of Bytes.
+                    byte[] hashBytes = hasher.ComputeHash(originalBytes);
+
+                    // rehash a number of times to help strengthen weak passwords
+                    // FIXME: ENHANCE make iterations configurable                
+                    for (int i = 0; i < 1024; i++)
+                    {
+                        hashBytes = hasher.ComputeHash(hashBytes);
+                    }
+                    // Optionally, represent the hash value as a base64-encoded string, 
+                    // For example, if you need to display the value or transmit it over a network.
+                    string hashBase64String = Convert.ToBase64String(hashBytes);
+
+                    return hashBase64String;
+                }
             }
             catch (Exception e)
             {
@@ -105,7 +110,7 @@ namespace Owasp.Esapi
         public string Encrypt(string plaintext)
         {            
              try
-            {                
+            {
                 // Create a new key and initialization vector.
                 // If a key is not provided, a key of appropriate length is
                 // automatically generated. You can retrieve its value through the Key
@@ -113,34 +118,40 @@ namespace Owasp.Esapi
                 // generated if you do not specify one.
 
                 // Get the encryptor.
-                SymmetricAlgorithm symmetricAlgorithm = SymmetricAlgorithm.Create(encryptAlgorithm);
-                symmetricAlgorithm.GenerateIV();
-                byte[] iv = symmetricAlgorithm.IV;
-                
-                ICryptoTransform encryptor = symmetricAlgorithm.CreateEncryptor(secretKey, iv);
-                // Define a new CryptoStream object to hold the encrypted bytes and encrypt the data.
-                MemoryStream msEncrypt = new MemoryStream();
-                CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write);
-                try
-                {                    
-                    // Convert the data to a byte array.
-                    Encoding textConverter = Encoding.GetEncoding(encoding);
-                    byte[] plaintextBytes = textConverter.GetBytes(plaintext);
-                    // Encrypt the data by writing it to the CryptoStream object.
-                    // Write all data to the crypto stream and flush it.
-                    csEncrypt.Write(plaintextBytes, 0, plaintextBytes.Length);
-                    csEncrypt.FlushFinalBlock();
+                using (SymmetricAlgorithm symmetricAlgorithm = SymmetricAlgorithm.Create(encryptAlgorithm))
+                {
+                    symmetricAlgorithm.GenerateIV();
+                    byte[] iv = symmetricAlgorithm.IV;
 
-                    // Get encrypted array of bytes from the memory stream.
-                    byte[] encryptedBytes = msEncrypt.ToArray();
-                    byte[] encryptedBytesPlusIv = Combine(iv, encryptedBytes);
-                    return Convert.ToBase64String(encryptedBytesPlusIv);
-                } finally
-                {                    
-                    symmetricAlgorithm.Clear();
-                    msEncrypt.Close();
-                    csEncrypt.Close();
-                }                
+                    ICryptoTransform encryptor = symmetricAlgorithm.CreateEncryptor(secretKey, iv);
+                    // Define a new CryptoStream object to hold the encrypted bytes and encrypt the data.
+
+                    using (MemoryStream msEncrypt = new MemoryStream())
+                    {
+                        CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write);
+                        try
+                        {
+                            // Convert the data to a byte array.
+                            Encoding textConverter = Encoding.GetEncoding(encoding);
+                            byte[] plaintextBytes = textConverter.GetBytes(plaintext);
+                            // Encrypt the data by writing it to the CryptoStream object.
+                            // Write all data to the crypto stream and flush it.
+                            csEncrypt.Write(plaintextBytes, 0, plaintextBytes.Length);
+                            csEncrypt.FlushFinalBlock();
+
+                            // Get encrypted array of bytes from the memory stream.
+                            byte[] encryptedBytes = msEncrypt.ToArray();
+                            byte[] encryptedBytesPlusIv = Combine(iv, encryptedBytes);
+                            return Convert.ToBase64String(encryptedBytesPlusIv);
+                        }
+                        finally
+                        {
+                            symmetricAlgorithm.Clear();
+                        }
+                    }
+                    
+                }
+                     
             }
             catch (Exception e)
             {                
@@ -155,42 +166,47 @@ namespace Owasp.Esapi
             // Note - Cipher is not threadsafe so we create one locally
             try
             {
-                SymmetricAlgorithm symmetricAlgorithm = SymmetricAlgorithm.Create(encryptAlgorithm);
-                
-                byte[] ciphertextBytes = Convert.FromBase64String(ciphertext);
-
-                // Ciphertext actually includes the IV, so we need to split it out
-                // Get first part of array, which is IV
-                int ivLength = symmetricAlgorithm.IV.Length;
-                byte[] ivBytes = new byte[ivLength];
-                Array.Copy(ciphertextBytes, ivBytes, ivLength);
-                
-                // Get second part of array which is actual ciphertext
-                int onlyCiphertextLength = ciphertextBytes.Length - ivLength;
-                byte[] onlyCiphertextBytes = new byte[onlyCiphertextLength];
-                Array.Copy(ciphertextBytes, ivLength, onlyCiphertextBytes, 0, onlyCiphertextLength);
-                
-                ICryptoTransform decryptor = symmetricAlgorithm.CreateDecryptor(secretKey, ivBytes);
-                
-                // Now decrypt the previously encrypted data using the decryptor.
-                MemoryStream msDecrypt = new MemoryStream(onlyCiphertextBytes);
-                CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read);
-                try
+                using (SymmetricAlgorithm symmetricAlgorithm = SymmetricAlgorithm.Create(encryptAlgorithm))
                 {
-                    // Read the data out of the crypto stream.
-                    byte[] plaintextBytes = new byte[onlyCiphertextLength];
-                    int decryptedBytes = csDecrypt.Read(plaintextBytes, 0, onlyCiphertextLength);
+                    byte[] ciphertextBytes = Convert.FromBase64String(ciphertext);
 
-                    // Convert the byte array back into a string.
-                    Encoding textConverter = Encoding.GetEncoding(encoding);
-                    string plaintext = textConverter.GetString(plaintextBytes, 0, decryptedBytes);
-                    return plaintext;
-                } finally
-                {
-                    symmetricAlgorithm.Clear();
-                    msDecrypt.Close();
-                    csDecrypt.Close();
+                    // Ciphertext actually includes the IV, so we need to split it out
+                    // Get first part of array, which is IV
+                    int ivLength = symmetricAlgorithm.IV.Length;
+                    byte[] ivBytes = new byte[ivLength];
+                    Array.Copy(ciphertextBytes, ivBytes, ivLength);
+
+                    // Get second part of array which is actual ciphertext
+                    int onlyCiphertextLength = ciphertextBytes.Length - ivLength;
+                    byte[] onlyCiphertextBytes = new byte[onlyCiphertextLength];
+                    Array.Copy(ciphertextBytes, ivLength, onlyCiphertextBytes, 0, onlyCiphertextLength);
+
+                    ICryptoTransform decryptor = symmetricAlgorithm.CreateDecryptor(secretKey, ivBytes);
+
+                    // Now decrypt the previously encrypted data using the decryptor.
+                    using (MemoryStream msDecrypt = new MemoryStream(onlyCiphertextBytes))
+                    {
+                        CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read);
+                        try
+                        {
+                            // Read the data out of the crypto stream.
+                            byte[] plaintextBytes = new byte[onlyCiphertextLength];
+                            int decryptedBytes = csDecrypt.Read(plaintextBytes, 0, onlyCiphertextLength);
+
+                            // Convert the byte array back into a string.
+                            Encoding textConverter = Encoding.GetEncoding(encoding);
+                            string plaintext = textConverter.GetString(plaintextBytes, 0, decryptedBytes);
+                            return plaintext;
+                        }
+                        finally
+                        {
+                            symmetricAlgorithm.Clear();
+                        }
+                    }
+                    
                 }
+
+                
             }
             catch (Exception e)
             {                
@@ -207,11 +223,13 @@ namespace Owasp.Esapi
 
             // Since this is the only asymmetric algorithm with signing capabilities, its hardcoded.
             // The more general APIs just aren't friendly.
-            DSACryptoServiceProvider dsaCsp = new DSACryptoServiceProvider(asymmetricKeyPair);
-            Encoding textConverter = Encoding.GetEncoding(encoding);
-            byte[] dataBytes = textConverter.GetBytes(data);
-            byte[] signatureBytes = dsaCsp.SignData(dataBytes);
-            return Convert.ToBase64String(signatureBytes);
+            using (DSACryptoServiceProvider dsaCsp = new DSACryptoServiceProvider(asymmetricKeyPair))
+            {
+                Encoding textConverter = Encoding.GetEncoding(encoding);
+                byte[] dataBytes = textConverter.GetBytes(data);
+                byte[] signatureBytes = dsaCsp.SignData(dataBytes);
+                return Convert.ToBase64String(signatureBytes);
+            }
         }
 
 
@@ -220,11 +238,13 @@ namespace Owasp.Esapi
         {
             try
             {
-                DSACryptoServiceProvider dsaCsp = new DSACryptoServiceProvider(asymmetricKeyPair);
-                Encoding textConverter = Encoding.GetEncoding(encoding);
-                byte[] signatureBytes = Convert.FromBase64String(signature);
-                byte[] dataBytes = textConverter.GetBytes(data);
-                return dsaCsp.VerifyData(dataBytes, signatureBytes);
+                using (DSACryptoServiceProvider dsaCsp = new DSACryptoServiceProvider(asymmetricKeyPair))
+                {
+                    Encoding textConverter = Encoding.GetEncoding(encoding);
+                    byte[] signatureBytes = Convert.FromBase64String(signature);
+                    byte[] dataBytes = textConverter.GetBytes(data);
+                    return dsaCsp.VerifyData(dataBytes, signatureBytes);
+                }
             }
             catch (Exception)
             {

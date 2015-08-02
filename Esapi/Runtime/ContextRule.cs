@@ -43,7 +43,7 @@ namespace Owasp.Esapi.Runtime
         /// Handle rule execution fault
         /// </summary>
         /// <param name="handler">
-        /// A <see cref="EventHandler<RuntimeEventArgs>"/>
+        /// A <see cref="EventHandler{RuntimeEventArgs}" />
         /// </param>
         /// <param name="sender">
         /// A <see cref="System.Object"/>
@@ -101,10 +101,30 @@ namespace Owasp.Esapi.Runtime
         #endregion
 
         #region IDisposable implementation
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _rule.Unsubscribe(this);
+            }
+        }
+
         public void Dispose()
         {
-            _rule.Unsubscribe(this);
+
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
+
         }
+
+        // Disposable types implement a finalizer.
+        ~ContextRule()
+        {
+            Dispose(false);
+        }
+
         #endregion
     }
 }

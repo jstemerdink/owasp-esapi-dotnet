@@ -8,7 +8,7 @@ namespace Owasp.Esapi
     /// <summary>
     /// HTTP data writer
     /// </summary>
-    internal class HttpDataWriter
+    internal class HttpDataWriter: IDisposable
     {
         private TextWriter _output  = null;
         private bool _insideSection = false;
@@ -19,6 +19,7 @@ namespace Owasp.Esapi
             if (output == null) {
                 throw new ArgumentNullException("output");
             }
+
             _output = output;
         }
 
@@ -103,5 +104,29 @@ namespace Owasp.Esapi
                 }
             }
         }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _output.Dispose();
+            }
+        }
+
+        public void Dispose()
+        {
+
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
+
+        }
+
+        // Disposable types implement a finalizer.
+        ~HttpDataWriter()
+        {
+            Dispose(false);
+        }
+
     }
 }

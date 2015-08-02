@@ -5,7 +5,7 @@ namespace Owasp.Esapi
     /// <summary>
     /// Named addin attribute
     /// </summary>
-    public class AddinAttribute : Attribute
+    public abstract class AddinAttribute : Attribute
     {
         private readonly string _name;
         private bool _autoLoad;
@@ -14,7 +14,7 @@ namespace Owasp.Esapi
         /// Initialize addin attribute
         /// </summary>
         /// <param name="name">Addin unique name</param>
-        public AddinAttribute(string name)
+        protected AddinAttribute(string name)
         {
             if (string.IsNullOrEmpty(name)) {
                 throw new ArgumentException("name");
