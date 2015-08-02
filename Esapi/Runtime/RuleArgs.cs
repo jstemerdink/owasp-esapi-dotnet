@@ -1,39 +1,66 @@
-﻿using System;
+﻿// Copyright© 2015 OWASP.org. 
+// 
+// Permission is hereby granted, free of charge, to any person
+// obtaining a copy of this software and associated documentation
+// files (the "Software"), to deal in the Software without
+// restriction, including without limitation the rights to use,
+// copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following
+// conditions:
+// 
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+// OTHER DEALINGS IN THE SOFTWARE.
+
+using System;
 
 namespace Owasp.Esapi.Runtime
 {
     /// <summary>
-    /// ESAPI ruule arguments
+    ///     ESAPI ruule arguments
     /// </summary>
     [Serializable]
     public class RuleArgs
     {
         /// <summary>
-        /// Empty rule arguments
+        ///     Empty rule arguments
         /// </summary>
         public static readonly RuleArgs Empty;
+
+        private readonly string _eventName;
 
         static RuleArgs()
         {
             Empty = new RuleArgs(string.Empty);
         }
 
-        private string _eventName;
-
         /// <summary>
-        /// Initialize rule arguments
+        ///     Initialize rule arguments
         /// </summary>
         /// <param name="eventName"></param>
         public RuleArgs(string eventName)
         {
-            _eventName = eventName;
+            this._eventName = eventName;
         }
+
         /// <summary>
-        /// Get event name
+        ///     Get event name
         /// </summary>
         public string Event
         {
-            get { return _eventName; }
+            get
+            {
+                return this._eventName;
+            }
         }
     }
 }

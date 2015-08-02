@@ -1,4 +1,27 @@
-﻿using System;
+﻿// Copyright© 2015 OWASP.org. 
+// 
+// Permission is hereby granted, free of charge, to any person
+// obtaining a copy of this software and associated documentation
+// files (the "Software"), to deal in the Software without
+// restriction, including without limitation the rights to use,
+// copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following
+// conditions:
+// 
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+// OTHER DEALINGS IN THE SOFTWARE.
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Principal;
@@ -7,7 +30,7 @@ using System.Web;
 namespace Owasp.Esapi
 {
     /// <summary>
-    /// HTTP request writer
+    ///     HTTP request writer
     /// </summary>
     internal class HttpRequestWriter : HttpDataWriter
     {
@@ -17,7 +40,7 @@ namespace Owasp.Esapi
         }
 
         /// <summary>
-        /// Write HTTP request
+        ///     Write HTTP request
         /// </summary>
         /// <param name="request"></param>
         /// <param name="user"></param>
@@ -25,54 +48,57 @@ namespace Owasp.Esapi
         /// <param name="verbose"></param>
         internal void Write(HttpRequest request, IPrincipal user, ICollection<string> obfuscatedParams, bool verbose)
         {
-            if (request == null) {
+            if (request == null)
+            {
                 throw new ArgumentNullException("user");
             }
 
             IPrincipal userPrincipal = (user == null ? Esapi.SecurityConfiguration.CurrentUser : user);
 
             //
-            WriteHeader("HttpRequestData");
+            this.WriteHeader("HttpRequestData");
 
             // User
-            WriteSection("User");
-            WriteValue("Identity", (userPrincipal != null ? userPrincipal.Identity.Name : "<not set>"));
-            WriteValue("HostName", request.UserHostName);
-            WriteValue("HostAddress", request.UserHostAddress);
-            WriteValue("IsAuthenticated", request.IsAuthenticated.ToString());
+            this.WriteSection("User");
+            this.WriteValue("Identity", (userPrincipal != null ? userPrincipal.Identity.Name : "<not set>"));
+            this.WriteValue("HostName", request.UserHostName);
+            this.WriteValue("HostAddress", request.UserHostAddress);
+            this.WriteValue("IsAuthenticated", request.IsAuthenticated.ToString());
 
             // Request
-            WriteSection("Request");
-            WriteValue("RawUrl", request.RawUrl);
-            WriteValue("HttpMethod", request.HttpMethod);
-            WriteValue("IsSecure", request.IsSecureConnection.ToString());
+            this.WriteSection("Request");
+            this.WriteValue("RawUrl", request.RawUrl);
+            this.WriteValue("HttpMethod", request.HttpMethod);
+            this.WriteValue("IsSecure", request.IsSecureConnection.ToString());
 
             // Cookies
-            WriteSection("Cookies");
-            foreach (HttpCookie cookie in request.Cookies) {
-                WriteValue(cookie.Name, cookie.ToString());
+            this.WriteSection("Cookies");
+            foreach (HttpCookie cookie in request.Cookies)
+            {
+                this.WriteValue(cookie.Name, cookie.ToString());
             }
 
             // Headers
-            WriteSection("Headers");
-            WriteValues(request.Headers);
+            this.WriteSection("Headers");
+            this.WriteValues(request.Headers);
 
             // Form 
-            WriteSection("Form");
-            WriteObfuscatedValues(request.Form, obfuscatedParams);
+            this.WriteSection("Form");
+            this.WriteObfuscatedValues(request.Form, obfuscatedParams);
 
             // Params
-            WriteSection("Params");
-            WriteObfuscatedValues(request.Params, obfuscatedParams);
+            this.WriteSection("Params");
+            this.WriteObfuscatedValues(request.Params, obfuscatedParams);
 
-            if (verbose) {
+            if (verbose)
+            {
                 // Server variables
-                WriteSection("ServerVariables");
-                WriteObfuscatedValues(request.ServerVariables, obfuscatedParams);
+                this.WriteSection("ServerVariables");
+                this.WriteObfuscatedValues(request.ServerVariables, obfuscatedParams);
             }
 
             // Done
-            WriteFooter();
+            this.WriteFooter();
         }
     }
 }

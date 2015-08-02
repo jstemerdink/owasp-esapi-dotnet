@@ -1,24 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿// Copyright© 2015 OWASP.org. 
+// 
+// Permission is hereby granted, free of charge, to any person
+// obtaining a copy of this software and associated documentation
+// files (the "Software"), to deal in the Software without
+// restriction, including without limitation the rights to use,
+// copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following
+// conditions:
+// 
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+// OTHER DEALINGS IN THE SOFTWARE.
+
 using System.Configuration;
 
 namespace Owasp.Esapi.Configuration
 {
     /// <summary>
-    /// The SecurityConfigurationElement Configuration Element.
+    ///     The SecurityConfigurationElement Configuration Element.
     /// </summary>
     public class SecurityConfigurationElement : ConfigurationElement
     {
         #region Type Property
 
         /// <summary>
-        /// The XML name of the <see cref="Type"/> property.
+        ///     The XML name of the <see cref="Type" /> property.
         /// </summary>
         internal const string TypePropertyName = "type";
 
         /// <summary>
-        /// Gets or sets the Type.
+        ///     Gets or sets the Type.
         /// </summary>
         [ConfigurationProperty(TypePropertyName, IsRequired = false, IsKey = false, IsDefaultCollection = false)]
         public string Type
@@ -38,12 +58,12 @@ namespace Owasp.Esapi.Configuration
         #region Algorithms Property
 
         /// <summary>
-        /// The XML name of the <see cref="Algorithms"/> property.
+        ///     The XML name of the <see cref="Algorithms" /> property.
         /// </summary>
         internal const string AlgorithmsPropertyName = "algorithms";
 
         /// <summary>
-        /// Gets or sets the Algorithms.
+        ///     Gets or sets the Algorithms.
         /// </summary>
         [ConfigurationProperty(AlgorithmsPropertyName, IsRequired = false, IsKey = false, IsDefaultCollection = false)]
         public AlgorithmsConfigurationElement Algorithms
@@ -63,12 +83,12 @@ namespace Owasp.Esapi.Configuration
         #region Encryption Property
 
         /// <summary>
-        /// The XML name of the <see cref="Encryption"/> property.
+        ///     The XML name of the <see cref="Encryption" /> property.
         /// </summary>
         internal const string EncryptionPropertyName = "encryption";
 
         /// <summary>
-        /// Gets or sets the Encryption.
+        ///     Gets or sets the Encryption.
         /// </summary>
         [ConfigurationProperty(EncryptionPropertyName, IsRequired = false, IsKey = false, IsDefaultCollection = false)]
         public EncryptionConfigurationElement Encryption
@@ -88,12 +108,12 @@ namespace Owasp.Esapi.Configuration
         #region Application Property
 
         /// <summary>
-        /// The XML name of the <see cref="Application"/> property.
+        ///     The XML name of the <see cref="Application" /> property.
         /// </summary>
         internal const string ApplicationPropertyName = "application";
 
         /// <summary>
-        /// Gets or sets the Application.
+        ///     Gets or sets the Application.
         /// </summary>
         [ConfigurationProperty(ApplicationPropertyName, IsRequired = false, IsKey = false, IsDefaultCollection = false)]
         public ApplicationConfigurationElement Application
@@ -109,25 +129,25 @@ namespace Owasp.Esapi.Configuration
         }
 
         #endregion
-
     }
 
     /// <summary>
-    /// The AlgorithmsConfigurationElement Configuration Element.
+    ///     The AlgorithmsConfigurationElement Configuration Element.
     /// </summary>
     public class AlgorithmsConfigurationElement : ConfigurationElement
     {
         #region Encryption Property
 
         /// <summary>
-        /// The XML name of the <see cref="Encryption"/> property.
+        ///     The XML name of the <see cref="Encryption" /> property.
         /// </summary>
         internal const string EncryptionPropertyName = "encryption";
 
         /// <summary>
-        /// Gets or sets the Encryption.
+        ///     Gets or sets the Encryption.
         /// </summary>
-        [ConfigurationProperty(EncryptionPropertyName, IsRequired = false, IsKey = false, IsDefaultCollection = false, DefaultValue = "Rijndael")]
+        [ConfigurationProperty(EncryptionPropertyName, IsRequired = false, IsKey = false, IsDefaultCollection = false,
+            DefaultValue = "Rijndael")]
         public string Encryption
         {
             get
@@ -145,14 +165,15 @@ namespace Owasp.Esapi.Configuration
         #region Hash Property
 
         /// <summary>
-        /// The XML name of the <see cref="Hash"/> property.
+        ///     The XML name of the <see cref="Hash" /> property.
         /// </summary>
         internal const string HashPropertyName = "hash";
 
         /// <summary>
-        /// Gets or sets the Hash.
+        ///     Gets or sets the Hash.
         /// </summary>
-        [ConfigurationProperty(HashPropertyName, IsRequired = false, IsKey = false, IsDefaultCollection = false, DefaultValue = "SHA512")]
+        [ConfigurationProperty(HashPropertyName, IsRequired = false, IsKey = false, IsDefaultCollection = false,
+            DefaultValue = "SHA512")]
         public string Hash
         {
             get
@@ -170,14 +191,15 @@ namespace Owasp.Esapi.Configuration
         #region Random Property
 
         /// <summary>
-        /// The XML name of the <see cref="Random"/> property.
+        ///     The XML name of the <see cref="Random" /> property.
         /// </summary>
         internal const string RandomPropertyName = "random";
 
         /// <summary>
-        /// Gets or sets the Random.
+        ///     Gets or sets the Random.
         /// </summary>
-        [ConfigurationProperty(RandomPropertyName, IsRequired = false, IsKey = false, IsDefaultCollection = false, DefaultValue = "System.Security.Cryptography.RNGCryptoServiceProvider")]
+        [ConfigurationProperty(RandomPropertyName, IsRequired = false, IsKey = false, IsDefaultCollection = false,
+            DefaultValue = "System.Security.Cryptography.RNGCryptoServiceProvider")]
         public string Random
         {
             get
@@ -195,14 +217,15 @@ namespace Owasp.Esapi.Configuration
         #region DigitalSignature Property
 
         /// <summary>
-        /// The XML name of the <see cref="DigitalSignature"/> property.
+        ///     The XML name of the <see cref="DigitalSignature" /> property.
         /// </summary>
         internal const string DigitalSignaturePropertyName = "digitalSignature";
 
         /// <summary>
-        /// Gets or sets the DigitalSignature.
+        ///     Gets or sets the DigitalSignature.
         /// </summary>
-        [ConfigurationProperty(DigitalSignaturePropertyName, IsRequired = false, IsKey = false, IsDefaultCollection = false, DefaultValue = "DSA")]
+        [ConfigurationProperty(DigitalSignaturePropertyName, IsRequired = false, IsKey = false,
+            IsDefaultCollection = false, DefaultValue = "DSA")]
         public string DigitalSignature
         {
             get
@@ -216,25 +239,25 @@ namespace Owasp.Esapi.Configuration
         }
 
         #endregion
-
     }
 
     /// <summary>
-    /// The EncryptionConfigurationElement Configuration Element.
+    ///     The EncryptionConfigurationElement Configuration Element.
     /// </summary>
     public class EncryptionConfigurationElement : ConfigurationElement
     {
         #region MasterPassword Property
 
         /// <summary>
-        /// The XML name of the <see cref="MasterPassword"/> property.
+        ///     The XML name of the <see cref="MasterPassword" /> property.
         /// </summary>
         internal const string MasterPasswordPropertyName = "masterPassword";
 
         /// <summary>
-        /// Gets or sets the MasterPassword.
+        ///     Gets or sets the MasterPassword.
         /// </summary>
-        [ConfigurationProperty(MasterPasswordPropertyName, IsRequired = false, IsKey = false, IsDefaultCollection = false)]
+        [ConfigurationProperty(MasterPasswordPropertyName, IsRequired = false, IsKey = false,
+            IsDefaultCollection = false)]
         public string MasterPassword
         {
             get
@@ -252,14 +275,15 @@ namespace Owasp.Esapi.Configuration
         #region MasterSalt Property
 
         /// <summary>
-        /// The XML name of the <see cref="MasterSalt"/> property.
+        ///     The XML name of the <see cref="MasterSalt" /> property.
         /// </summary>
         internal const string MasterSaltPropertyName = "masterSalt";
 
         /// <summary>
-        /// Gets or sets the MasterSalt.
+        ///     Gets or sets the MasterSalt.
         /// </summary>
-        [ConfigurationProperty(MasterSaltPropertyName, IsRequired = false, IsKey = false, IsDefaultCollection = false, DefaultValue = "7FB22E3EAD054696A221204CF32F5400")]
+        [ConfigurationProperty(MasterSaltPropertyName, IsRequired = false, IsKey = false, IsDefaultCollection = false,
+            DefaultValue = "7FB22E3EAD054696A221204CF32F5400")]
         public string MasterSalt
         {
             get
@@ -273,25 +297,25 @@ namespace Owasp.Esapi.Configuration
         }
 
         #endregion
-
     }
 
     /// <summary>
-    /// The ApplicationConfigurationElement Configuration Element.
+    ///     The ApplicationConfigurationElement Configuration Element.
     /// </summary>
     public class ApplicationConfigurationElement : ConfigurationElement
     {
         #region UploadValidExtensions Property
 
         /// <summary>
-        /// The XML name of the <see cref="UploadValidExtensions"/> property.
+        ///     The XML name of the <see cref="UploadValidExtensions" /> property.
         /// </summary>
         internal const string UploadValidExtensionsPropertyName = "uploadValidExtensions";
 
         /// <summary>
-        /// Gets or sets the UploadValidExtensions.
+        ///     Gets or sets the UploadValidExtensions.
         /// </summary>
-        [ConfigurationProperty(UploadValidExtensionsPropertyName, IsRequired = false, IsKey = false, IsDefaultCollection = false, DefaultValue = ".zip,.pdf,.tar,.gz,.xls,.properties,.txt,.xml")]
+        [ConfigurationProperty(UploadValidExtensionsPropertyName, IsRequired = false, IsKey = false,
+            IsDefaultCollection = false, DefaultValue = ".zip,.pdf,.tar,.gz,.xls,.properties,.txt,.xml")]
         public string UploadValidExtensions
         {
             get
@@ -309,14 +333,15 @@ namespace Owasp.Esapi.Configuration
         #region UploadMaxSize Property
 
         /// <summary>
-        /// The XML name of the <see cref="UploadMaxSize"/> property.
+        ///     The XML name of the <see cref="UploadMaxSize" /> property.
         /// </summary>
         internal const string UploadMaxSizePropertyName = "uploadMaxSize";
 
         /// <summary>
-        /// Gets or sets the UploadMaxSize.
+        ///     Gets or sets the UploadMaxSize.
         /// </summary>
-        [ConfigurationProperty(UploadMaxSizePropertyName, IsRequired = false, IsKey = false, IsDefaultCollection = false, DefaultValue = "50000")]
+        [ConfigurationProperty(UploadMaxSizePropertyName, IsRequired = false, IsKey = false, IsDefaultCollection = false,
+            DefaultValue = "50000")]
         public int UploadMaxSize
         {
             get
@@ -334,14 +359,15 @@ namespace Owasp.Esapi.Configuration
         #region CharacterEncoding Property
 
         /// <summary>
-        /// The XML name of the <see cref="CharacterEncoding"/> property.
+        ///     The XML name of the <see cref="CharacterEncoding" /> property.
         /// </summary>
         internal const string CharacterEncodingPropertyName = "characterEncoding";
 
         /// <summary>
-        /// Gets or sets the CharacterEncoding.
+        ///     Gets or sets the CharacterEncoding.
         /// </summary>
-        [ConfigurationProperty(CharacterEncodingPropertyName, IsRequired = false, IsKey = false, IsDefaultCollection = false, DefaultValue = "UTF-8")]
+        [ConfigurationProperty(CharacterEncodingPropertyName, IsRequired = false, IsKey = false,
+            IsDefaultCollection = false, DefaultValue = "UTF-8")]
         public string CharacterEncoding
         {
             get
@@ -359,14 +385,15 @@ namespace Owasp.Esapi.Configuration
         #region ResponseContentType Property
 
         /// <summary>
-        /// The XML name of the <see cref="ResponseContentType"/> property.
+        ///     The XML name of the <see cref="ResponseContentType" /> property.
         /// </summary>
         internal const string ResponseContentTypePropertyName = "responseContentType";
 
         /// <summary>
-        /// Gets or sets the ResponseContentType.
+        ///     Gets or sets the ResponseContentType.
         /// </summary>
-        [ConfigurationProperty(ResponseContentTypePropertyName, IsRequired = false, IsKey = false, IsDefaultCollection = false, DefaultValue = "text/html; charset=UTF-8")]
+        [ConfigurationProperty(ResponseContentTypePropertyName, IsRequired = false, IsKey = false,
+            IsDefaultCollection = false, DefaultValue = "text/html; charset=UTF-8")]
         public string ResponseContentType
         {
             get
@@ -384,14 +411,15 @@ namespace Owasp.Esapi.Configuration
         #region LogLevel Property
 
         /// <summary>
-        /// The XML name of the <see cref="LogLevel"/> property.
+        ///     The XML name of the <see cref="LogLevel" /> property.
         /// </summary>
         internal const string LogLevelPropertyName = "logLevel";
 
         /// <summary>
-        /// Gets or sets the LogLevel.
+        ///     Gets or sets the LogLevel.
         /// </summary>
-        [ConfigurationProperty(LogLevelPropertyName, IsRequired = false, IsKey = false, IsDefaultCollection = false, DefaultValue = "ALL")]
+        [ConfigurationProperty(LogLevelPropertyName, IsRequired = false, IsKey = false, IsDefaultCollection = false,
+            DefaultValue = "ALL")]
         public string LogLevel
         {
             get
@@ -409,14 +437,15 @@ namespace Owasp.Esapi.Configuration
         #region MaxRedirectLocation Property
 
         /// <summary>
-        /// The XML name of the <see cref="MaxRedirectLocation"/> property.
+        ///     The XML name of the <see cref="MaxRedirectLocation" /> property.
         /// </summary>
         internal const string MaxRedirectLocationPropertyName = "maxRedirectLocation";
 
         /// <summary>
-        /// Gets or sets the MaxRedirectLocation.
+        ///     Gets or sets the MaxRedirectLocation.
         /// </summary>
-        [ConfigurationProperty(MaxRedirectLocationPropertyName, IsRequired = false, IsKey = false, IsDefaultCollection = false, DefaultValue = "1000")]
+        [ConfigurationProperty(MaxRedirectLocationPropertyName, IsRequired = false, IsKey = false,
+            IsDefaultCollection = false, DefaultValue = "1000")]
         public int MaxRedirectLocation
         {
             get
@@ -434,14 +463,15 @@ namespace Owasp.Esapi.Configuration
         #region MaxFileNameLength Property
 
         /// <summary>
-        /// The XML name of the <see cref="MaxFileNameLength"/> property.
+        ///     The XML name of the <see cref="MaxFileNameLength" /> property.
         /// </summary>
         internal const string MaxFileNameLengthPropertyName = "maxFileNameLength";
 
         /// <summary>
-        /// Gets or sets the MaxFileNameLength.
+        ///     Gets or sets the MaxFileNameLength.
         /// </summary>
-        [ConfigurationProperty(MaxFileNameLengthPropertyName, IsRequired = false, IsKey = false, IsDefaultCollection = false, DefaultValue = "1000")]
+        [ConfigurationProperty(MaxFileNameLengthPropertyName, IsRequired = false, IsKey = false,
+            IsDefaultCollection = false, DefaultValue = "1000")]
         public int MaxFileNameLength
         {
             get
@@ -459,14 +489,15 @@ namespace Owasp.Esapi.Configuration
         #region LogEncodingRequired Property
 
         /// <summary>
-        /// The XML name of the <see cref="LogEncodingRequired"/> property.
+        ///     The XML name of the <see cref="LogEncodingRequired" /> property.
         /// </summary>
         internal const string LogEncodingRequiredPropertyName = "logEncodingRequired";
 
         /// <summary>
-        /// Gets or sets the LogEncodingRequired.
+        ///     Gets or sets the LogEncodingRequired.
         /// </summary>
-        [ConfigurationProperty(LogEncodingRequiredPropertyName, IsRequired = false, IsKey = false, IsDefaultCollection = false, DefaultValue = "false")]
+        [ConfigurationProperty(LogEncodingRequiredPropertyName, IsRequired = false, IsKey = false,
+            IsDefaultCollection = false, DefaultValue = "false")]
         public bool LogEncodingRequired
         {
             get
@@ -480,6 +511,5 @@ namespace Owasp.Esapi.Configuration
         }
 
         #endregion
-
     }
 }

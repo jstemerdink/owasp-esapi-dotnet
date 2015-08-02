@@ -1,89 +1,117 @@
-﻿using System;
+﻿// Copyright© 2015 OWASP.org. 
+// 
+// Permission is hereby granted, free of charge, to any person
+// obtaining a copy of this software and associated documentation
+// files (the "Software"), to deal in the Software without
+// restriction, including without limitation the rights to use,
+// copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following
+// conditions:
+// 
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+// OTHER DEALINGS IN THE SOFTWARE.
+
+using System;
 using System.Collections;
+using System.Collections.Generic;
+
 using Owasp.Esapi.Errors;
 using Owasp.Esapi.Interfaces;
-using System.Collections.Generic;
+
 using EM = Owasp.Esapi.Resources.Errors;
 
 namespace Owasp.Esapi
 {
-    /// <inheritdoc cref="Owasp.Esapi.Interfaces.IAccessReferenceMap"/>
+    /// <inheritdoc cref="Owasp.Esapi.Interfaces.IAccessReferenceMap" />
     /// <summary>
-    /// Reference <see cref="Owasp.Esapi.Interfaces.IAccessReferenceMap"/> implementation uses short random strings to
-    /// create a layer of indirection. Other possible implementations would use
-    /// simple integers as indirect references.
+    ///     Reference <see cref="Owasp.Esapi.Interfaces.IAccessReferenceMap" /> implementation uses short random strings to
+    ///     create a layer of indirection. Other possible implementations would use
+    ///     simple integers as indirect references.
     /// </summary>
     public class AccessReferenceMap : IAccessReferenceMap
     {
-        private Dictionary<string, object> itod = new Dictionary<string, object>();
+        private readonly IRandomizer random = Esapi.Randomizer;
+
         private Dictionary<object, string> dtoi = new Dictionary<object, string>();
 
-        private IRandomizer random = Esapi.Randomizer;
+        private Dictionary<string, object> itod = new Dictionary<string, object>();
 
         /// <summary>
-        /// Default constructor.
+        ///     Default constructor.
         /// </summary>
         public AccessReferenceMap()
         {
-
         }
 
         /// <summary>
-        /// Constructor that accepts collection of direct references.
+        ///     Constructor that accepts collection of direct references.
         /// </summary>
         /// <param name="directReferences">
-        /// The collection of direct references to initialize the access reference map.
-        /// </param>		
+        ///     The collection of direct references to initialize the access reference map.
+        /// </param>
         public AccessReferenceMap(ICollection directReferences)
         {
-            Update(directReferences);
+            this.Update(directReferences);
         }
 
-        /// <inheritdoc cref="Owasp.Esapi.Interfaces.IAccessReferenceMap.GetDirectReferences()"/>
+        /// <inheritdoc cref="Owasp.Esapi.Interfaces.IAccessReferenceMap.GetDirectReferences()" />
         public ICollection GetDirectReferences()
         {
-            return dtoi.Keys;
+            return this.dtoi.Keys;
         }
 
-        /// <inheritdoc cref="Owasp.Esapi.Interfaces.IAccessReferenceMap.GetIndirectReferences()"/>
+        /// <inheritdoc cref="Owasp.Esapi.Interfaces.IAccessReferenceMap.GetIndirectReferences()" />
         public ICollection GetIndirectReferences()
         {
-            return itod.Keys;
+            return this.itod.Keys;
         }
 
-        /// <inheritdoc cref="Owasp.Esapi.Interfaces.IAccessReferenceMap.AddDirectReference(object)"/>
+        /// <inheritdoc cref="Owasp.Esapi.Interfaces.IAccessReferenceMap.AddDirectReference(object)" />
         public string AddDirectReference(object direct)
         {
-            if (direct == null) {
+            if (direct == null)
+            {
                 throw new ArgumentNullException("direct");
             }
 
-            string indirect = random.GetRandomString(6, CharSetValues.Alphanumerics);
-            itod[indirect] = direct;
-            dtoi[direct] = indirect;
+            string indirect = this.random.GetRandomString(6, CharSetValues.Alphanumerics);
+            this.itod[indirect] = direct;
+            this.dtoi[direct] = indirect;
             return indirect;
         }
 
-        /// <inheritdoc cref="Owasp.Esapi.Interfaces.IAccessReferenceMap.RemoveDirectReference(object)"/>	
+        /// <inheritdoc cref="Owasp.Esapi.Interfaces.IAccessReferenceMap.RemoveDirectReference(object)" />
         public string RemoveDirectReference(object direct)
         {
-            if (direct == null) {
+            if (direct == null)
+            {
                 throw new ArgumentNullException("direct");
             }
 
-            string indirect = dtoi[direct];
+            string indirect = this.dtoi[direct];
             if (indirect != null)
             {
-                itod.Remove(indirect);
-                dtoi.Remove(direct);
+                this.itod.Remove(indirect);
+                this.dtoi.Remove(direct);
             }
             return indirect;
         }
 
-        /// <inheritdoc cref="Owasp.Esapi.Interfaces.IAccessReferenceMap.Update(ICollection)"/>
+        /// <inheritdoc cref="Owasp.Esapi.Interfaces.IAccessReferenceMap.Update(ICollection)" />
         public void Update(ICollection directReferences)
         {
-            if (directReferences == null) {
+            if (directReferences == null)
+            {
                 throw new ArgumentNullException("directReferences");
             }
 
@@ -96,13 +124,13 @@ namespace Owasp.Esapi
                 // get the old indirect reference
                 string indirect;
 
-                if (!dtoi.TryGetValue(direct, out indirect) || indirect == null)
+                if (!this.dtoi.TryGetValue(direct, out indirect) || indirect == null)
                 {
                     // if the old reference is null, then create a new one that doesn't
                     // collide with any existing indirect references
                     do
                     {
-                        indirect = random.GetRandomString(6, CharSetValues.Alphanumerics);
+                        indirect = this.random.GetRandomString(6, CharSetValues.Alphanumerics);
                     }
                     while (itod_new.ContainsKey(indirect));
                 }
@@ -111,36 +139,40 @@ namespace Owasp.Esapi
                 dtoi_new[direct] = indirect;
             }
 
-            itod = itod_new;
-            dtoi = dtoi_new;
+            this.itod = itod_new;
+            this.dtoi = dtoi_new;
         }
 
-        /// <inheritdoc cref="Owasp.Esapi.Interfaces.IAccessReferenceMap.GetIndirectReference(object)"/>
-        public string GetIndirectReference(Object directReference)
+        /// <inheritdoc cref="Owasp.Esapi.Interfaces.IAccessReferenceMap.GetIndirectReference(object)" />
+        public string GetIndirectReference(object directReference)
         {
-            if (directReference == null) {
+            if (directReference == null)
+            {
                 throw new ArgumentNullException("directReference");
             }
 
             string indirect;
-            dtoi.TryGetValue(directReference, out indirect);
+            this.dtoi.TryGetValue(directReference, out indirect);
 
             return indirect;
         }
 
-        /// <inheritdoc cref="Owasp.Esapi.Interfaces.IAccessReferenceMap.GetDirectReference(string)"/>
+        /// <inheritdoc cref="Owasp.Esapi.Interfaces.IAccessReferenceMap.GetDirectReference(string)" />
         public object GetDirectReference(string indirectReference)
         {
-            if (indirectReference == null) {
+            if (indirectReference == null)
+            {
                 throw new ArgumentNullException("indirectReference");
             }
 
-            if (!itod.ContainsKey(indirectReference)) {
-                throw new AccessControlException(EM.AccessReferenceMap_AccessDeniedUser, 
-                                EM.AccessReferenceMap_AccessDeniedLog);
+            if (!this.itod.ContainsKey(indirectReference))
+            {
+                throw new AccessControlException(
+                    EM.AccessReferenceMap_AccessDeniedUser,
+                    EM.AccessReferenceMap_AccessDeniedLog);
             }
 
-            return itod[indirectReference];
+            return this.itod[indirectReference];
         }
     }
 }

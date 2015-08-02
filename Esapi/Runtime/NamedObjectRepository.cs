@@ -1,117 +1,160 @@
-﻿using System;
+﻿// Copyright© 2015 OWASP.org. 
+// 
+// Permission is hereby granted, free of charge, to any person
+// obtaining a copy of this software and associated documentation
+// files (the "Software"), to deal in the Software without
+// restriction, including without limitation the rights to use,
+// copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following
+// conditions:
+// 
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+// OTHER DEALINGS IN THE SOFTWARE.
+
+using System;
 using System.Collections.Generic;
-using Owasp.Esapi.Interfaces;
 
 namespace Owasp.Esapi.Runtime
 {
     /// <summary>
-    /// Object repository
+    ///     Object repository
     /// </summary>
     /// <typeparam id="TObject"></typeparam>
     internal class NamedObjectRepository<TObject> : IObjectRepository<string, TObject>
         where TObject : class
     {
-        private Dictionary<string, TObject> _entries;
+        private readonly Dictionary<string, TObject> _entries;
 
         public NamedObjectRepository()
         {
-            _entries = new Dictionary<string, TObject>();
+            this._entries = new Dictionary<string, TObject>();
         }
 
         public NamedObjectRepository(IDictionary<string, TObject> entries)
         {
-            _entries = (entries != null ?
-                            new Dictionary<string, TObject>(entries) :
-                            new Dictionary<string, TObject>());
+            this._entries = (entries != null
+                                 ? new Dictionary<string, TObject>(entries)
+                                 : new Dictionary<string, TObject>());
         }
 
         /// <summary>
-        /// Get entries
+        ///     Get entries
         /// </summary>
         protected Dictionary<string, TObject> Entries
         {
-            get { return _entries; }
+            get
+            {
+                return this._entries;
+            }
         }
 
         #region IObjectRepository<TName, TObject> Members
+
         /// <summary>
-        /// Register object
+        ///     Register object
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
         public string Register(TObject value)
         {
             string id = Guid.NewGuid().ToString();
-            Register(id, value);
+            this.Register(id, value);
             return id;
         }
+
         /// <summary>
-        /// Register object
+        ///     Register object
         /// </summary>
         /// <param id="id"></param>
         /// <param id="value"></param>
         /// <returns></returns>
         public void Register(string id, TObject value)
         {
-            if (string.IsNullOrEmpty(id) || _entries.ContainsKey(id)) {
+            if (string.IsNullOrEmpty(id) || this._entries.ContainsKey(id))
+            {
                 throw new ArgumentException("Invalid id", "id");
             }
-            if (value == null) {
+            if (value == null)
+            {
                 throw new ArgumentNullException("value");
             }
-            _entries[id] = value;
+            this._entries[id] = value;
         }
+
         /// <summary>
-        /// Revoke object
+        ///     Revoke object
         /// </summary>
         /// <param id="id"></param>
         /// <returns></returns>
         public void Revoke(string id)
         {
-            _entries.Remove(id);
+            this._entries.Remove(id);
         }
+
         /// <summary>
-        /// Lookup object
+        ///     Lookup object
         /// </summary>
         /// <param id="id"></param>
         /// <param id="value"></param>
         /// <returns></returns>
         public bool Lookup(string id, out TObject value)
         {
-            return _entries.TryGetValue(id, out value);
+            return this._entries.TryGetValue(id, out value);
         }
+
         /// <summary>
-        /// Get count
+        ///     Get count
         /// </summary>
         public int Count
         {
-            get { return _entries.Count; }
+            get
+            {
+                return this._entries.Count;
+            }
         }
+
         /// <summary>
-        /// Get keys
+        ///     Get keys
         /// </summary>
         public ICollection<string> Ids
         {
-            get { return _entries.Keys; }
+            get
+            {
+                return this._entries.Keys;
+            }
         }
+
         /// <summary>
-        /// Get objects
+        ///     Get objects
         /// </summary>
         public ICollection<TObject> Objects
         {
-            get { return _entries.Values; }
+            get
+            {
+                return this._entries.Values;
+            }
         }
+
         /// <summary>
-        /// Get object
+        ///     Get object
         /// </summary>
         /// <param id="id"></param>
         /// <returns></returns>
         public TObject Get(string id)
         {
-            return _entries[id]; 
+            return this._entries[id];
         }
 
         #endregion
-
     }
 }

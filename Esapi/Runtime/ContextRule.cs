@@ -1,78 +1,113 @@
-﻿using System;
+﻿// Copyright© 2015 OWASP.org. 
+// 
+// Permission is hereby granted, free of charge, to any person
+// obtaining a copy of this software and associated documentation
+// files (the "Software"), to deal in the Software without
+// restriction, including without limitation the rights to use,
+// copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following
+// conditions:
+// 
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+// OTHER DEALINGS IN THE SOFTWARE.
+
+using System;
 using System.Collections.Generic;
 
 namespace Owasp.Esapi.Runtime
 {
     /// <summary>
-    /// Context rule implementation
+    ///     Context rule implementation
     /// </summary>
     internal class ContextRule : RuntimeEventBridge, IContextRule, IDisposable
     {
-        private IRule _rule;
-        private List<IAction> _faultActions;
+        private readonly List<IAction> _faultActions;
+
+        private readonly IRule _rule;
 
         /// <summary>
-        /// Initialize context rule
+        ///     Initialize context rule
         /// </summary>
         /// <param name="rule">
-        /// A <see cref="IRule"/>
+        ///     A <see cref="IRule" />
         /// </param>
         internal ContextRule(IRule rule)
         {
-            if (rule == null) {
+            if (rule == null)
+            {
                 throw new ArgumentNullException();
             }
-            _rule = rule;
-            _faultActions = new List<IAction>();
+            this._rule = rule;
+            this._faultActions = new List<IAction>();
 
             // Subscribe rule to events
-            _rule.Subscribe(this);
+            this._rule.Subscribe(this);
         }
+
         /// <summary>
-        /// Unsubscribe from publisher's events
+        ///     Unsubscribe from publisher's events
         /// </summary>
         /// <param name="publisher">
-        /// A <see cref="IRuntimeEventPublisher"/>
+        ///     A <see cref="IRuntimeEventPublisher" />
         /// </param>
         public override void Unsubscribe(IRuntimeEventPublisher publisher)
         {
             base.Unsubscribe(publisher);
-            _rule.Unsubscribe(this);
+            this._rule.Unsubscribe(this);
         }
+
         /// <summary>
-        /// Handle rule execution fault
+        ///     Handle rule execution fault
         /// </summary>
         /// <param name="handler">
-        /// A <see cref="EventHandler{RuntimeEventArgs}" />
+        ///     A <see cref="EventHandler{RuntimeEventArgs}" />
         /// </param>
         /// <param name="sender">
-        /// A <see cref="System.Object"/>
+        ///     A <see cref="System.Object" />
         /// </param>
         /// <param name="args">
-        /// A <see cref="RuntimeEventArgs"/>
+        ///     A <see cref="RuntimeEventArgs" />
         /// </param>
         /// <param name="exp">
-        /// A <see cref="Exception"/>
+        ///     A <see cref="Exception" />
         /// </param>
         /// <returns>
-        /// A <see cref="System.Boolean"/>
+        ///     A <see cref="System.Boolean" />
         /// </returns>
-        protected override bool ForwardEventFault(EventHandler<RuntimeEventArgs> handler, object sender, RuntimeEventArgs args, Exception exp)
+        protected override bool ForwardEventFault(
+            EventHandler<RuntimeEventArgs> handler,
+            object sender,
+            RuntimeEventArgs args,
+            Exception exp)
         {
             // Init action args
-            ActionArgs actionArgs = new ActionArgs() {
-                FaultingRule = _rule,
-                FaultException = exp,
-                RuntimeArgs = args
-            };
+            ActionArgs actionArgs = new ActionArgs
+                                        {
+                                            FaultingRule = this._rule,
+                                            FaultException = exp,
+                                            RuntimeArgs = args
+                                        };
 
-            try {
+            try
+            {
                 // Run each action
-                foreach (IAction action in _faultActions) {
+                foreach (IAction action in this._faultActions)
+                {
                     action.Execute(actionArgs);
                 }
             }
-            catch (Exception) {
+            catch (Exception)
+            {
                 // Nothing to do anymore, throw 
                 throw;
             }
@@ -80,14 +115,13 @@ namespace Owasp.Esapi.Runtime
             return true;
         }
 
-
-
         #region IContextRule implementation
+
         public IRule Rule
         {
             get
             {
-                return _rule;
+                return this._rule;
             }
         }
 
@@ -95,9 +129,10 @@ namespace Owasp.Esapi.Runtime
         {
             get
             {
-                return _faultActions;
+                return this._faultActions;
             }
         }
+
         #endregion
 
         #region IDisposable implementation
@@ -106,23 +141,21 @@ namespace Owasp.Esapi.Runtime
         {
             if (disposing)
             {
-                _rule.Unsubscribe(this);
+                this._rule.Unsubscribe(this);
             }
         }
 
         public void Dispose()
         {
-
-            Dispose(true);
+            this.Dispose(true);
 
             GC.SuppressFinalize(this);
-
         }
 
         // Disposable types implement a finalizer.
         ~ContextRule()
         {
-            Dispose(false);
+            this.Dispose(false);
         }
 
         #endregion

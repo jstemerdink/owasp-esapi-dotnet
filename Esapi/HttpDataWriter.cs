@@ -1,4 +1,27 @@
-﻿using System;
+﻿// Copyright© 2015 OWASP.org. 
+// 
+// Permission is hereby granted, free of charge, to any person
+// obtaining a copy of this software and associated documentation
+// files (the "Software"), to deal in the Software without
+// restriction, including without limitation the rights to use,
+// copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following
+// conditions:
+// 
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+// OTHER DEALINGS IN THE SOFTWARE.
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
@@ -6,79 +29,98 @@ using System.IO;
 namespace Owasp.Esapi
 {
     /// <summary>
-    /// HTTP data writer
+    ///     HTTP data writer
     /// </summary>
-    internal class HttpDataWriter: IDisposable
+    internal class HttpDataWriter : IDisposable
     {
-        private TextWriter _output  = null;
-        private bool _insideSection = false;
-        private bool _hasValues     = false;
+        private readonly TextWriter _output;
+
+        private bool _hasValues;
+
+        private bool _insideSection;
 
         protected HttpDataWriter(TextWriter output)
         {
-            if (output == null) {
+            if (output == null)
+            {
                 throw new ArgumentNullException("output");
             }
 
-            _output = output;
+            this._output = output;
+        }
+
+        public void Dispose()
+        {
+            this.Dispose(true);
+
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
-        /// Write header
+        ///     Write header
         /// </summary>
         /// <param name="text"></param>
         protected void WriteHeader(string text)
         {
-            _output.Write(text + ": ");
+            this._output.Write(text + ": ");
         }
+
         /// <summary>
-        /// Write footer
+        ///     Write footer
         /// </summary>
         protected void WriteFooter()
         {
-            if (_insideSection) {
-                _output.Write(") ");
+            if (this._insideSection)
+            {
+                this._output.Write(") ");
             }
         }
+
         /// <summary>
-        /// Start new data section
+        ///     Start new data section
         /// </summary>
         /// <param name="name"></param>
         protected void WriteSection(string name)
         {
-            if (_insideSection) {
-                _output.Write(") ");
-                _insideSection = false;
-                _hasValues = false;
+            if (this._insideSection)
+            {
+                this._output.Write(") ");
+                this._insideSection = false;
+                this._hasValues = false;
             }
 
-            _output.Write(" (" + name + ": ");
-            _insideSection = !string.IsNullOrEmpty(name);
+            this._output.Write(" (" + name + ": ");
+            this._insideSection = !string.IsNullOrEmpty(name);
         }
+
         /// <summary>
-        /// Write value
+        ///     Write value
         /// </summary>
         /// <param name="name"></param>
         /// <param name="value"></param>
         protected void WriteValue(string name, string value)
         {
-            _output.Write(string.Format("{0}\"{1}\"=\"{2}\"", _hasValues ? ", " : "",  name, value));
-            _hasValues = true;
+            this._output.Write("{0}\"{1}\"=\"{2}\"", this._hasValues ? ", " : "", name, value);
+            this._hasValues = true;
         }
+
         /// <summary>
-        /// Write value collection
+        ///     Write value collection
         /// </summary>
         /// <param name="values"></param>
         protected void WriteValues(NameValueCollection values)
         {
-            if (values != null) {
-                foreach (string name in values.Keys) {
-                    WriteValue(name, values[name]);
+            if (values != null)
+            {
+                foreach (string name in values.Keys)
+                {
+                    this.WriteValue(name, values[name]);
                 }
             }
         }
+
         /// <summary>
-        /// Write value
+        ///     Write value
         /// </summary>
         /// <param name="name"></param>
         /// <param name="value"></param>
@@ -86,21 +128,25 @@ namespace Owasp.Esapi
         protected void WriteObfuscatedValue(string name, string value, ICollection<string> obfuscatedValues)
         {
             string obfuscatedValue = value;
-            if (obfuscatedValues != null && obfuscatedValues.Contains(name)) {
+            if (obfuscatedValues != null && obfuscatedValues.Contains(name))
+            {
                 obfuscatedValue = "********";
             }
-            WriteValue(name, obfuscatedValue);
+            this.WriteValue(name, obfuscatedValue);
         }
+
         /// <summary>
-        /// Write values
+        ///     Write values
         /// </summary>
         /// <param name="values"></param>
         /// <param name="obfuscatedValues">Parameter names whose values are obfuscated</param>
         protected void WriteObfuscatedValues(NameValueCollection values, ICollection<string> obfuscatedValues)
         {
-            if (values != null) {
-                foreach (string name in values.Keys) {
-                    WriteObfuscatedValue(name, values[name], obfuscatedValues);
+            if (values != null)
+            {
+                foreach (string name in values.Keys)
+                {
+                    this.WriteObfuscatedValue(name, values[name], obfuscatedValues);
                 }
             }
         }
@@ -109,24 +155,14 @@ namespace Owasp.Esapi
         {
             if (disposing)
             {
-                _output.Dispose();
+                this._output.Dispose();
             }
-        }
-
-        public void Dispose()
-        {
-
-            Dispose(true);
-
-            GC.SuppressFinalize(this);
-
         }
 
         // Disposable types implement a finalizer.
         ~HttpDataWriter()
         {
-            Dispose(false);
+            this.Dispose(false);
         }
-
     }
 }
